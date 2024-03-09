@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv'
 
 import chats from './data/data.js'
+import connectDB from './config/db.js';
+import colors from 'colors';
 const app = express();
 dotenv.config()
 
@@ -24,6 +26,7 @@ app.listen(port, (err, res) => {
     if (err) {
         console.log('App is not listening on port ' + port + ': ' + err.message);
     } else {
-        console.log('App is listening on port ' + port);
+        console.log(`App is listening on port ${port}`.yellow);
+        connectDB();
     }
 })
