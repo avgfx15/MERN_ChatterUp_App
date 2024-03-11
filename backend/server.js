@@ -4,21 +4,23 @@ import dotenv from 'dotenv'
 import chats from './data/data.js'
 import connectDB from './config/db.js';
 import colors from 'colors';
+import userRoute from './routes/userRoutes.js';
+import { notFound, customErrorhandler } from './middlewares/errorHandlerMiddleware.js';
+
+
 const app = express();
-dotenv.config()
+dotenv.config();
+app.use(express.json())
+
+
+app.use('/api/user', userRoute)
 
 app.get('/', (req, res) => {
     res.send('App is Running ')
 })
 
-app.get('/api/chat', (req, res) => {
-    res.send(chats)
-})
-
-app.get('/api/chat/:id', async (req, res) => {
-    const findChat = await chats.find(chat => chat.id === req.params.chat)
-    res.send(findChat)
-})
+app.use(notFound);
+app.use(customErrorhandler);
 
 const port = process.env.PORT || 5200;
 

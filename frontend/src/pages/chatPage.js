@@ -6,8 +6,12 @@ const ChatPage = () => {
     const [chats, setChats] = useState([]);
 
     const fetchChatsData = async () => {
-        const { data } = await axios.get('/api/chat')
-        setChats(data);
+        try {
+            const { data } = await axios.get('/chats')
+            setChats(data);
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
     useEffect(() => {

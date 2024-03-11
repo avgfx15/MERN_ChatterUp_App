@@ -5,7 +5,6 @@ var userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         index: true,
     },
     email: {
@@ -20,7 +19,6 @@ var userSchema = new mongoose.Schema({
     },
     profilePic: {
         type: String,
-        required: true,
         default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
     password: {
@@ -30,4 +28,5 @@ var userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 //Export the model
-module.exports = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('User', userSchema);
+export default UserModel;
