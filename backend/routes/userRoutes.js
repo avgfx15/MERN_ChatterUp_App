@@ -1,5 +1,5 @@
 import express from 'express';
-import { signInUserController, signUpUserController, allUserController } from '../controllers/userControllers.js'
+import { signInUserController, signUpUserController, allUserController, searchUserController } from '../controllers/userControllers.js'
 
 const userRoute = express.Router();
 
@@ -11,7 +11,10 @@ userRoute.post('/singup', signUpUserController)
 userRoute.post('/singin', signInUserController)
 
 // @ GET All User
-userRoute.get('/', allUserController)
+userRoute.get('/all', allUserController)
+
+// @ GET User By Search
+userRoute.get('/', searchUserController)
 
 
 export default userRoute;

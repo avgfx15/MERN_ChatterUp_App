@@ -84,3 +84,17 @@ export const allUserController = asynchandler(async (req, res) => {
     }
 })
 
+// @ GET User By Search
+export const searchUserController = asynchandler(async (req, res) => {
+    const searchUsers = req.query.searchText ? {
+        $or: [
+            { name: { $regex: req.query.searchText, $options: 'i' } },
+            { email: { $regex: req.query.searchText, $options: 'i' } }
+        ]
+    } : {};
+    console.log(searchUsers);
+    const users = await UserModel.find(searchUsers).select('name email mobile profilePic');
+
+    res.status(200).json({ Users: users })
+})
+
