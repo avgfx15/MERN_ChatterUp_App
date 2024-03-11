@@ -74,7 +74,13 @@ export const signInUserController = asynchandler(async (req, res) => {
 
 // @ GET All USers
 
-export const allUserController = async (req, res) => {
-
-}
+export const allUserController = asynchandler(async (req, res) => {
+    try {
+        const allUsers = await UserModel.find().select('name email mobile profilePic')
+        res.status(200).json({ Users: allUsers })
+    } catch (error) {
+        res.status(400);
+        throw new Error('No Users Found')
+    }
+})
 
