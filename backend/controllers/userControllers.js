@@ -92,8 +92,8 @@ export const searchUserController = asynchandler(async (req, res) => {
             { email: { $regex: req.query.searchText, $options: 'i' } }
         ]
     } : {};
-    console.log(searchUsers);
-    const users = await UserModel.find(searchUsers).select('name email mobile profilePic');
+
+    const users = await UserModel.find(searchUsers).find({ _id: { $ne: req.user._id } }).select('name email mobile profilePic');
 
     res.status(200).json({ Users: users })
 })

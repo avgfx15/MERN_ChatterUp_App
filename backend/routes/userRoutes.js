@@ -1,5 +1,6 @@
 import express from 'express';
 import { signInUserController, signUpUserController, allUserController, searchUserController } from '../controllers/userControllers.js'
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const userRoute = express.Router();
 
@@ -14,7 +15,7 @@ userRoute.post('/singin', signInUserController)
 userRoute.get('/all', allUserController)
 
 // @ GET User By Search
-userRoute.get('/', searchUserController)
+userRoute.get('/', authMiddleware, searchUserController)
 
 
 export default userRoute;
