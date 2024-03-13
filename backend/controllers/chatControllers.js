@@ -116,7 +116,19 @@ export const createChatGroupController = asyncHandler(async (req, res) => {
 // * Rename Group Name
 
 export const renameGroupNameController = asyncHandler(async (req, res) => {
-
+    try {
+        const { newName, chatId } = req.body;
+        const updateChatGroupName = await ChatModel.findByIdAndUpdate(chatId, { chatName: newName }, { new: true }).populate("users", "-password").populate("groupAdmin", "-password");
+        if (!updateChatGroupName) {
+            res.status(404);
+            throw new Error("Chat Group Not Found")
+        } else {
+            return res.status(200).json({ updateChatGroupName })
+        }
+    } catch (error) {
+        console.error(`Error in creating chat room : ${err}`);
+        return res.status(500).json({ error: err });
+    }
 })
 
 // * Remove From Group
@@ -128,5 +140,10 @@ export const removeMemberFromGroupController = asyncHandler(async (req, res) => 
 // * Add To Group
 
 export const addMemberToGroupController = asyncHandler(async (req, res) => {
-
+try {
+    
+} catch (error) {
+    console.error(`Error in creating chat room : ${err}`);
+    return res.status(500).json({ error: err });
+}
 })
