@@ -126,24 +126,91 @@ export const renameGroupNameController = asyncHandler(async (req, res) => {
             return res.status(200).json({ updateChatGroupName })
         }
     } catch (error) {
-        console.error(`Error in creating chat room : ${err}`);
-        return res.status(500).json({ error: err });
+        console.error(`Error in creating chat room : ${error}`);
+        return res.status(500).json({ error: error });
     }
 })
 
 // * Remove From Group
 
 export const removeMemberFromGroupController = asyncHandler(async (req, res) => {
+    try {
+        const loggedInUser = req.user._id;
 
+        const { userId, chatId } = req.body;
+
+        // # Only GroupAdmin can Add User
+
+        const groupCreatedByLoggedInUser = await ChatModel.findOne({ groupAdmin: loggedInUser })
+        if (!groupCreatedByLoggedInUser) {
+            return res.status(400).json({ message: "Only Group can add or remove User from Group" })
+        }
+
+        // # Check User is already in the group
+
+        let isAlreadyInGroup;
+        isAlreadyInGroup = await ChatModel.findOne({
+            isGroupChat: true,
+            $and: [
+                { users: { $elemMatch: { $eq: loggedInUser } } },
+                { users: { $elemMatch: { $eq: userId } } },
+            ],
+        })
+        if (!isAlreadyInGroup) {
+            return res.status(401).json({ message: "User is not in the Group" })
+        }
+
+        const addUserInChatGroup = await ChatModel.findByIdAndUpdate(chatId, { $pull: { users: userId } }, { new: true }).populate("users", "-password").populate("groupAdmin", "-password");
+        if (!addUserInChatGroup) {
+            res.status(404);
+            throw new Error("Chat Group Not Found")
+        } else {
+            return res.status(200).json({ addUserInChatGroup })
+        }
+    } catch (error) {
+        console.error(`Error in creating chat room : ${error}`);
+        return res.status(500).json({ error: error });
+    }
 })
 
 // * Add To Group
 
 export const addMemberToGroupController = asyncHandler(async (req, res) => {
-try {
-    
-} catch (error) {
-    console.error(`Error in creating chat room : ${err}`);
-    return res.status(500).json({ error: err });
-}
+    try {
+        const loggedInUser = req.user._id;
+
+        const { userId, chatId } = req.body;
+
+        // # Only GroupAdmin can Add User
+
+        const groupCreatedByLoggedInUser = await ChatModel.findOne({ groupAdmin: loggedInUser })
+        if (!groupCreatedByLoggedInUser) {
+            return res.status(400).json({ message: "Only Group can add or remove User from Group" })
+        }
+
+        // # Check User is already in the group
+
+        let isAlreadyInGroup;
+        isAlreadyInGroup = await ChatModel.findOne({
+            isGroupChat: true,
+            $and: [
+                { users: { $elemMatch: { $eq: loggedInUser } } },
+                { users: { $elemMatch: { $eq: userId } } },
+            ],
+        })
+        if (isAlreadyInGroup) {
+            return res.status(401).json({ message: "User already in the Group" })
+        }
+
+        const addUserInChatGroup = await ChatModel.findByIdAndUpdate(chatId, { $push: { users: userId } }, { new: true }).populate("users", "-password").populate("groupAdmin", "-password");
+        if (!addUserInChatGroup) {
+            res.status(404);
+            throw new Error("Chat Group Not Found")
+        } else {
+            return res.status(200).json({ addUserInChatGroup })
+        }
+    } catch (error) {
+        console.error(`Error in creating chat room : ${error}`);
+        return res.status(500).json({ error: error });
+    }
 })
