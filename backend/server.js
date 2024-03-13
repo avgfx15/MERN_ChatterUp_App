@@ -5,6 +5,7 @@ import chats from './data/data.js'
 import connectDB from './config/db.js';
 import colors from 'colors';
 import userRoute from './routes/userRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import { notFound, customErrorhandler } from './middlewares/errorHandlerMiddleware.js';
 
 
@@ -12,8 +13,9 @@ const app = express();
 dotenv.config();
 app.use(express.json())
 
-
+// // All Routes
 app.use('/api/user', userRoute)
+app.use('/api/chat', chatRoutes)
 
 app.get('/', (req, res) => {
     res.send('App is Running ')

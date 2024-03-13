@@ -10,7 +10,7 @@ var chatSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    user: [{
+    users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
@@ -25,6 +25,6 @@ var chatSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 //Export the model
-const ChatModel = mongoose.model('User', chatSchema);
+const ChatModel = mongoose.model('Chat', chatSchema);
 
-module.exports = ChatModel;
+export default ChatModel;
