@@ -4,17 +4,18 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter } from 'react-router-dom'
 import './index.css';
 import App from './App';
+import ChatProvider from './Context/ChatProvider.js';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ChakraProvider>
+  <BrowserRouter>
+    <ChakraProvider>
+      <ChatProvider>
         <App />
-      </ChakraProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+      </ChatProvider>
+    </ChakraProvider>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
