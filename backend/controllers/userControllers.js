@@ -77,7 +77,7 @@ export const signInUserController = asynchandler(async (req, res) => {
 export const allUserController = asynchandler(async (req, res) => {
     try {
         const allUsers = await UserModel.find().select('name email mobile profilePic')
-        res.status(200).json({ Users: allUsers })
+        res.status(200).json(allUsers)
     } catch (error) {
         res.status(400);
         throw new Error('No Users Found')
@@ -95,6 +95,6 @@ export const searchUserController = asynchandler(async (req, res) => {
 
     const users = await UserModel.find(searchUsers).find({ _id: { $ne: req.user._id } }).select('name email mobile profilePic');
 
-    res.status(200).json({ Users: users })
+    res.status(200).json(users)
 })
 

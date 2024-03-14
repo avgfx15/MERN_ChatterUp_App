@@ -10,7 +10,7 @@ export const getAllChatsController = asyncHandler(async (req, res) => {
 
         // $ Get all Chats of loggedInUser with Others
         const chatOfLoggedInUser = await ChatModel.find({ users: loggedInUser }).populate('users', "-password").populate('latestChat').sort({ updatedAt: -1 });
-        return res.status(200).json({ chatOfLoggedInUser })
+        return res.status(200).json(chatOfLoggedInUser)
     } catch (error) {
         res.status(400);
         throw new Error(error.message)
