@@ -31,6 +31,7 @@ export const signUpUserController = asynchandler(async (req, res) => {
                 const jwtToken = await generateToken(savedUser._id);
 
                 res.status(201).json({
+                    _id: savedUser._id,
                     name: savedUser.name,
                     email: savedUser.email,
                     mobile: savedUser.mobile,
@@ -59,6 +60,7 @@ export const signInUserController = asynchandler(async (req, res) => {
         } else {
             const jwtToken = await generateToken(findUser._id);
             res.status(200).json({
+                _id: findUser._id,
                 name: findUser.name,
                 email: findUser.email,
                 mobile: findUser.mobile,

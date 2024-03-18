@@ -68,16 +68,17 @@ export const ceateChatController = asyncHandler(async (req, res) => {
 
 // + Create Chat Group
 export const createChatGroupController = asyncHandler(async (req, res) => {
+    console.log('Create Group Function Call');
     try {
         //// Get Logged User
         const loggedInUser = req.user._id;
-
+        console.log(loggedInUser);
         const { chatName } = req.body
+        console.log(req.body.chatName);
         // # Check for Incomplete Data
         if (!chatName || !req.body.users) {
             return res.status(400).send("incomplete data")
         }
-
         // # Check Groupname is already Exists or not
         let existingChat = await ChatModel.findOne({ chatName })
         if (existingChat) {
@@ -102,6 +103,7 @@ export const createChatGroupController = asyncHandler(async (req, res) => {
         });
 
         const getGroupData = await ChatModel.findOne({ _id: newGroupChat._id }).populate('users', "-password").populate('groupAdmin', "-password")
+        console.log(getGroupData);
 
         // $ send response with the newly created chat info
         return res.status(201).json(getGroupData)
@@ -123,7 +125,7 @@ export const renameGroupNameController = asyncHandler(async (req, res) => {
             res.status(404);
             throw new Error("Chat Group Not Found")
         } else {
-            return res.status(200).json({ updateChatGroupName })
+            return res.status(200).json(updateChatGroupName)
         }
     } catch (error) {
         console.error(`Error in creating chat room : ${error}`);

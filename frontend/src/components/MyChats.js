@@ -9,7 +9,7 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
-const MyChats = () => {
+const MyChats = ({ refreshUserList }) => {
 
     const [loggedUser, setLoggedUser] = useState()
 
@@ -28,7 +28,7 @@ const MyChats = () => {
                 }
             }
             const { data } = await axios.get('/api/chat', config)
-            console.log(data);
+
             setChats(data)
         } catch (error) {
             toast({
@@ -46,7 +46,7 @@ const MyChats = () => {
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem('userInfo')))
         getAllChats()
-    }, [])
+    }, [refreshUserList])
 
     return (
         <Box display={{ base: selectedChat ? "none" : "flex", md: "flex" }} flexDirection={"column"}
@@ -61,16 +61,16 @@ const MyChats = () => {
                 pb={3}
                 px={3}
                 fontSize={{ base: "28px", md: "30px" }}
-                fontFamily="Work sans"
-                d="flex"
-                w="100%"
-                justifyContent="space-between"
-                alignItems="center"
+                fontFamily={"Work sans"}
+                display={"flex"}
+                width={"100%"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
             >
                 My Chats
                 <GroupChatModal>
                     <Button
-                        d="flex"
+                        // display={"flex"}
                         fontSize={{ base: "17px", md: "10px", lg: "17px" }}
                         rightIcon={<AddIcon />}
                     >
@@ -82,7 +82,7 @@ const MyChats = () => {
                 display={"flex"}
                 flexDirection={"column"}
                 padding={"3px"}
-                bg="#F8F8F8"
+                bg={"#F8F8F8"}
                 width={"100%"}
                 height={"100%"}
                 borderRadius={"lg"}
