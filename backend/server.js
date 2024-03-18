@@ -7,6 +7,7 @@ import colors from 'colors';
 import userRoute from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { notFound, customErrorhandler } from './middlewares/errorHandlerMiddleware.js';
+import messageRoutes from './routes/messageRoutes.js';
 
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json())
 // // All Routes
 app.use('/api/user', userRoute)
 app.use('/api/chat', chatRoutes)
+app.use('/api/message', messageRoutes)
 
 app.get('/', (req, res) => {
     res.send('App is Running ')

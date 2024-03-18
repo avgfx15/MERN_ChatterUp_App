@@ -16,10 +16,12 @@ import {
     Box,
     FormControl,
     Input,
-    FormLabel
+    FormLabel,
+    Spinner
 } from '@chakra-ui/react'
 import { ChatState } from '../../Context/ChatProvider'
 import UserBadgeItem from '../UserAvatar/UserBadgeItem'
+import UserListItem from '../UserAvatar/UserListItem'
 
 // # Main Function 
 
@@ -42,11 +44,8 @@ const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList }) => {
 
     const { user, selectedChat, setSelectedChat } = ChatState();
 
-    // # Handle Remove User 
-    const handleLeaveGroup = async () => {
 
-    }
-
+    // $ Handle Rename Group Chat
     const handleRename = async () => {
         if (!groupChatName) {
             return
@@ -76,11 +75,145 @@ const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList }) => {
             });
             setRenameLoading(false)
         }
-        setGroupChatName('')
+        setGroupChatName(" ")
     }
 
-    const handleSearch = async () => {
+    // $ To Add new Users in the Group handleSearch
+    const handleSearch = async (query) => {
+        setSearch(query)
 
+        if (!query) {
+            return;
+        }
+        try {
+            setLoading(true);
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            }
+
+            const { data } = await axios.get(`/api/user?searchText=${search}`, config)
+
+            setLoading(false);
+            setSearchResult(data)
+        } catch (error) {
+            toast({
+                title: 'Error Occured!',
+                description: error.response.data.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            setLoading(false)
+        }
+    }
+
+    // # Handle Add User In The Group
+
+    const handleAddUserInGroup = async (selUser) => {
+
+
+        // $ Check User is already in the group
+        if (selectedChat.users.find((u) => u._id === selUser._id)) {
+            toast({
+                title: 'User Already In The Group',
+                description: "User Already In The Group",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            return
+        }
+        console.log(selectedChat.groupAdmin, user._id);
+
+        // $ Check loggedUser is admin or not
+        if (selectedChat.groupAdmin !== user._id) {
+            toast({
+                title: 'Only Admin can add User in the Group',
+                description: "Admin can add User In The Group",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            return
+        }
+
+        setLoading(true);
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            }
+
+            const { data } = await axios.put('/api/chat/addmember', {
+                userId: selUser._id,
+                chatId: selectedChat._id
+            }, config)
+            setSelectedChat(data);
+            setRefreshUserList()
+            setLoading(false)
+        } catch (error) {
+            console.log(error.response.data.message);
+            toast({
+                title: 'Error Occured!',
+                description: error.response.data.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            setLoading(false)
+        }
+    }
+
+    // # Handle Remove User 
+    const handleLeaveGroup = async (selUser) => {
+
+        // $ Check loggedUser is admin or not
+        if (selectedChat.groupAdmin !== user._id && selUser._id !== user._id) {
+            toast({
+                title: 'Only Admin can add User in the Group',
+                description: "Admin can add User In The Group",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            return
+        }
+        try {
+            setLoading(true);
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            }
+
+            const { data } = await axios.put('/api/chat/removemember', {
+                userId: selUser._id,
+                chatId: selectedChat._id
+            }, config)
+
+            selUser._id === user._id ? setSelectedChat() : setSelectedChat(data);
+
+            setRefreshUserList(!refreshUserList)
+            setLoading(false)
+        } catch (error) {
+            toast({
+                title: 'Error Occured!',
+                description: error.response.data.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            });
+            setLoading(false)
+        }
     }
 
     return (
@@ -118,6 +251,16 @@ const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList }) => {
                             <Input type='text' placeholder='Add New User' onChange={(e) => handleSearch(e.target.value)} />
                             {/* <FormHelperText>We'll never share your Name.</FormHelperText> */}
                         </FormControl>
+
+                        {loading ? (<Spinner size={"lg"} />) : (
+                            searchResult?.map((user) => (
+                                <UserListItem
+                                    key={user._id}
+                                    user={user}
+                                    handleFunction={() => handleAddUserInGroup(user)}
+                                />
+                            ))
+                        )}
                     </ModalBody>
 
                     <ModalFooter>
