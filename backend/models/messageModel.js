@@ -20,4 +20,4 @@ var messageSchema = new mongoose.Schema({
 //Export the model
 const MessageModel = mongoose.model('Message', messageSchema);
 
-module.exports = MessageModel;
+export default MessageModel;
