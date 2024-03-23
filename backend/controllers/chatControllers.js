@@ -3,14 +3,17 @@ import ChatModel from "../models/chatModel.js";
 import UserModel from "../models/userModel.js"
 
 // @ Get All chats
-export const getAllChatsController = asyncHandler(async (req, res) => {
+export const getAllChatsForLoggedInUserController = asyncHandler(async (req, res) => {
+
     // $ Get LoggedInUser Data
     const loggedInUser = req.user._id;
     try {
 
         // $ Get all Chats of loggedInUser with Others
-        const chatOfLoggedInUser = await ChatModel.find({ users: loggedInUser }).populate('users', "-password").populate('latestChat').sort({ updatedAt: -1 });
-        return res.status(200).json(chatOfLoggedInUser)
+        const allChats = await ChatModel.find({ users: { $in: req.user._id } }).populate('users', "-password").populate('groupAdmin', "-password");
+
+        res.status(200).send(allChats);
+
     } catch (error) {
         res.status(400);
         throw new Error(error.message)
@@ -20,8 +23,6 @@ export const getAllChatsController = asyncHandler(async (req, res) => {
 // + Access Chats
 export const ceateChatController = asyncHandler(async (req, res) => {
 
-
-
     //// Get Logged User
     const loggedInUser = req.user._id;
 
@@ -30,38 +31,40 @@ export const ceateChatController = asyncHandler(async (req, res) => {
 
     //// Find if user is already in chat with loggedInUser
     let isAlreadyInChat;
-    isAlreadyInChat = await ChatModel.findOne({
+    isAlreadyInChat = await ChatModel.find({
         isGroupChat: false,
         $and: [
             { users: { $elemMatch: { $eq: loggedInUser } } },
             { users: { $elemMatch: { $eq: userId } } },
         ],
     }).populate('users', "-password").populate('latestChat');
+    console.log(isAlreadyInChat);
     // $ Populate sender Data for latestChat
     isAlreadyInChat = await UserModel.populate(isAlreadyInChat, {
         path: "latestChat.sender",
         select: "name emial mobile profilePic"
     })
 
-    // +  If not in chat, create a new chat
-    if (!isAlreadyInChat) {
-        isAlreadyInChat = await ChatModel.create({
-            chatName: "personal-chat",
-            isGroupChat: false,
-            users: [loggedInUser, userId],
-        });
-        try {
-            const createdChat = await isAlreadyInChat.save();
-            const findChat = await ChatModel.findOne({ _id: createdChat._id }).populate('users', "-password");
+    if (isAlreadyInChat.length > 0) {
+        res.send(isAlreadyInChat[0])
+    } else {
 
-            res.status(200).json({ findChat })
+        // +  If not in chat, create a new chat
+        try {
+            var chatData = {
+                chatName: "personal-chat",
+                isGroupChat: false,
+                users: [loggedInUser, userId],
+                groupAdmin: loggedInUser
+            };
+            const createdChat = await ChatModel.create(chatData)
+            const findChat = await ChatModel.findOne({ _id: createdChat._id }).populate('users', "-password").populate('groupAdmin', "-password");
+
+            res.status(200).json(findChat)
         } catch (error) {
             res.status(400);
             throw new Error(error.message)
         }
-    } else {
-        // $ Already in chatModel just send
-        res.json(isAlreadyInChat);
     }
 })
 

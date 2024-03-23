@@ -29,7 +29,7 @@ export const sendMessageController = asyncHandler(async (req, res) => {
 
         await ChatModel.findByIdAndUpdate(chatId, {
             latestChat: newChat
-        });
+        }, { new: true });
         res.status(201).json(newChat)
     } catch (error) {
         res.status(400);

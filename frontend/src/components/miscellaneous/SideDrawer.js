@@ -40,7 +40,7 @@ const SideDrawer = () => {
     const [search, setSearch] = useState("")
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false)
-    const [loadingChat, setLoadingChat] = useState()
+    const [loadingChat, setLoadingChat] = useState(false)
 
 
     const toast = useToast();
@@ -79,7 +79,7 @@ const SideDrawer = () => {
             }
 
             const { data } = await axios.get(`/api/user?searchText=${search}`, config)
-
+            console.log(data);
             setLoading(false);
             setSearchResult(data)
         } catch (error) {
@@ -95,9 +95,11 @@ const SideDrawer = () => {
         }
     }
 
+    // $ Get all Chat By ChatId
     const getAllChats = async (userId) => {
+
         try {
-            setLoading(true);
+            setLoadingChat(true);
 
             const config = {
                 headers: {
@@ -108,10 +110,11 @@ const SideDrawer = () => {
 
             const { data } = await axios.post(`/api/chat`, { userId }, config)
 
-            if (!chats.find((chat) => chat._id === data._id)) setChats([data, ...chats])
-
+            if (!chats.find((chat) => chat._id === data._id));
+            setChats([data, ...chats])
+            console.log(data);
             setSelectedChat(data)
-            setLoading(false);
+            setLoadingChat(false);
             onClose()
         } catch (error) {
             toast({
@@ -176,11 +179,11 @@ const SideDrawer = () => {
                         {loading ? (
                             <ChatLoading />
                         ) : (
-                            searchResult?.map((user) => (
+                            searchResult.map((u) => (
                                 <UserListItem
-                                    key={user._id}
-                                    user={user}
-                                    handleFunction={() => getAllChats(user._id)}
+                                    key={u._id}
+                                    user={u}
+                                    handleFunction={() => getAllChats(u._id)}
                                 />
                             ))
                         )}

@@ -1,6 +1,6 @@
 import express from 'express';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { ceateChatController, getAllChatsController, createChatGroupController, renameGroupNameController, removeMemberFromGroupController, addMemberToGroupController } from '../controllers/chatControllers.js';
+import { ceateChatController, getAllChatsForLoggedInUserController, createChatGroupController, renameGroupNameController, removeMemberFromGroupController, addMemberToGroupController } from '../controllers/chatControllers.js';
 
 const chatRoutes = express.Router();
 
@@ -8,7 +8,7 @@ const chatRoutes = express.Router();
 chatRoutes.post('/', authMiddleware, ceateChatController)
 
 // @ Get All Chats
-chatRoutes.get('/', authMiddleware, getAllChatsController)
+chatRoutes.get('/', authMiddleware, getAllChatsForLoggedInUserController)
 
 // + Create Chat Group
 chatRoutes.post('/group', authMiddleware, createChatGroupController)

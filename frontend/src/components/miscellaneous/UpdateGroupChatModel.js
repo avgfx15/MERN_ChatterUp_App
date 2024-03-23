@@ -25,7 +25,7 @@ import UserListItem from '../UserAvatar/UserListItem'
 
 // # Main Function 
 
-const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList }) => {
+const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList, getAllChatWithChatId }) => {
 
     // % State Define
 
@@ -201,7 +201,8 @@ const UpdateGroupChatModel = ({ refreshUserList, setRefreshUserList }) => {
 
             selUser._id === user._id ? setSelectedChat() : setSelectedChat(data);
 
-            setRefreshUserList(!refreshUserList)
+            setRefreshUserList(!refreshUserList);
+            getAllChatWithChatId()
             setLoading(false)
         } catch (error) {
             toast({

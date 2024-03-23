@@ -28,7 +28,7 @@ const MyChats = ({ refreshUserList }) => {
                 }
             }
             const { data } = await axios.get('/api/chat', config)
-
+            console.log(data);
             setChats(data)
         } catch (error) {
             toast({
@@ -46,7 +46,7 @@ const MyChats = ({ refreshUserList }) => {
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem('userInfo')))
         getAllChats()
-    }, [refreshUserList])
+    }, [])
 
     return (
         <Box display={{ base: selectedChat ? "none" : "flex", md: "flex" }} flexDirection={"column"}
