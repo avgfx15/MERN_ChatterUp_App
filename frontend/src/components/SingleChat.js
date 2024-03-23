@@ -30,7 +30,7 @@ const SingleChat = ({ refreshUserList, setRefreshUserList }) => {
     const [isTyping, setIsTyping] = useState(false)
 
     // $ Pre define ChatState
-    const { user, selectedChat, setSelectedChat } = ChatState()
+    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState()
 
     const toast = useToast();
 
@@ -47,9 +47,7 @@ const SingleChat = ({ refreshUserList, setRefreshUserList }) => {
                     Authorization: `Bearer ${user.token}`
                 }
             }
-
             const { data } = await axios.get(`/api/message/${selectedChat._id}`, config)
-            console.log(data);
             setMessages(data);
             setLoading(false)
 
@@ -126,13 +124,18 @@ const SingleChat = ({ refreshUserList, setRefreshUserList }) => {
         selectedChatCompare = selectedChat;
     }, [selectedChat])
 
+    console.log(notification);
 
     // $ Received New Message
 
     useEffect(() => {
         socket.on('messageReceived', async (newMessageReceived) => {
-            if (selectedChatCompare || selectedChatCompare._id !== newMessageReceived.caht._id) {
+            if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
                 /// $ Give Notification
+                if (!notification.includes(newMessageReceived)) {
+                    setNotification([newMessageReceived, ...notification]);
+                    setRefreshUserList(!refreshUserList);
+                }
             } else {
                 setMessages([...messages, newMessageReceived])
             }

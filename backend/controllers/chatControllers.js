@@ -10,7 +10,7 @@ export const getAllChatsForLoggedInUserController = asyncHandler(async (req, res
     try {
 
         // $ Get all Chats of loggedInUser with Others
-        const allChats = await ChatModel.find({ users: { $in: req.user._id } }).populate('users', "-password").populate('groupAdmin', "-password");
+        const allChats = await ChatModel.find({ users: { $in: req.user._id } }).populate('users', "-password").populate('groupAdmin', "-password").sort({ updatedAt: -1 })
 
         res.status(200).send(allChats);
 

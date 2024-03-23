@@ -30,6 +30,10 @@ import ProfileModal from './ProfileModal.js';
 import axios from "axios";
 import ChatLoading from '../ChatLoading.js';
 import UserListItem from '../UserAvatar/UserListItem.js';
+import { getSender } from '../config/ChatLogics.js';
+
+import NotificationBadge from 'react-notification-badge';
+import { Effect } from 'react-notification-badge';
 
 
 //// Main Function For the Page SideDrawer Start
@@ -49,7 +53,7 @@ const SideDrawer = () => {
 
     const history = useHistory()
 
-    const { user, setSelectedChat, chats, setChats } = ChatState();
+    const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState();
 
     const logOutHandler = async () => {
         localStorage.removeItem('userInfo');
@@ -79,7 +83,7 @@ const SideDrawer = () => {
             }
 
             const { data } = await axios.get(`/api/user?searchText=${search}`, config)
-            console.log(data);
+
             setLoading(false);
             setSearchResult(data)
         } catch (error) {
@@ -112,7 +116,7 @@ const SideDrawer = () => {
 
             if (!chats.find((chat) => chat._id === data._id));
             setChats([data, ...chats])
-            console.log(data);
+
             setSelectedChat(data)
             setLoadingChat(false);
             onClose()
@@ -143,8 +147,19 @@ const SideDrawer = () => {
                 <div>
                     <Menu>
                         <MenuButton padding={"2px"}>
+                            <NotificationBadge count={notification.length} effect={Effect.SCALE} />
                             <BellIcon fontSize={"2xl"} margin={"3px"} />
                         </MenuButton>
+                        <MenuList padding={"0.3rem"}>
+                            {!notification.length && "No new message"}
+                            {notification.map(notify => (
+                                <MenuItem key={notify._id} onClick={() => {
+                                    setSelectedChat(notify.chat);
+                                    setNotification(notification.filter((n) => n !== notify))
+                                }}>
+                                    {notify.chat.isGroupChat ? `New Message in ${notify.chat.chatname}` : `New Message From ${getSender(user, notify.chat.users)}`}
+                                </MenuItem>))}
+                        </MenuList>
                     </Menu>
                     <Menu>
                         <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
